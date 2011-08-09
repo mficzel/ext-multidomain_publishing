@@ -8,10 +8,12 @@
 		<languageKey index="default" type="array">
 			<label index="pages.tx_multidomainpublishing_visibility">Domain visibility</label>
 			<label index="tt_content.tx_multidomainpublishing_visibility">Domain visibility</label>
+			<label index="sys_domain.tx_multidomainpublishing_pagetype">Default pagetype</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="pages.tx_multidomainpublishing_visibility">Domain Sichtbarkeit</label>
 			<label index="tt_content.tx_multidomainpublishing_visibility">Domain Sichtbarkeit</label>
+			<label index="sys_domain.tx_multidomainpublishing_pagetype">Standatrd Seitentyp</label>
 		</languageKey>
 	</data>
 </T3locallang>

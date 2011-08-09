@@ -34,7 +34,6 @@ $BE_USER->modAccess($MCONF,1);	// This checks permissions and exits if the users
 	// DEFAULT initialization of a module [END]
 
 
-
 /**
  * Module 'Domain Preview' for the 'multidomain_publishing' extension.
  *

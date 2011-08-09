@@ -1,7 +1,7 @@
 <?php
 
 	// DO NOT REMOVE OR CHANGE THESE 2 LINES:
-$MCONF['name'] = 'txmultidomainpublishingModuleDomainPreview';
+$MCONF['name'] = 'web_domainpreview';
 $MCONF['script'] = '_DISPATCH';
 	
 $MCONF['access'] = 'user,group';
