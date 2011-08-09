@@ -42,8 +42,19 @@ $BE_USER->modAccess($MCONF,1);	// This checks permissions and exits if the users
  * @subpackage	tx_multidomainpublishing
  */
 class  tx_multidomainpublishing_module1 extends t3lib_SCbase {
-				var $pageinfo;
+	
+				var $MOD_MENU=array();
 
+		
+				var $perms_clause;
+				var $modTSconfig;
+				var $type;
+				var $pageinfo;
+				var $url;
+				var $id;
+				var $wsInstruction='';	
+
+	
 				/**
 				 * Initializes the Module
 				 * @return	void
@@ -53,11 +64,15 @@ class  tx_multidomainpublishing_module1 extends t3lib_SCbase {
 
 					parent::init();
 
-					/*
-					if (t3lib_div::_GP('clear_all_cache'))	{
-						$this->include_once[] = PATH_t3lib.'class.t3lib_tcemain.php';
-					}
-					*/
+					$this->MCONF = $GLOBALS['MCONF'];
+					$this->id = intval(t3lib_div::_GP('id'));
+
+					$this->perms_clause = $BE_USER->getPagePermsClause(1);
+
+						// page/be_user TSconfig settings and blinding of menu-items
+					$this->modTSconfig = t3lib_BEfunc::getModTSconfig($this->id,'mod.'.$this->MCONF['name']);
+					$this->type = intval($this->modTSconfig['properties']['type']);
+
 				}
 
 				/**
@@ -66,14 +81,26 @@ class  tx_multidomainpublishing_module1 extends t3lib_SCbase {
 				 * @return	void
 				 */
 				function menuConfig()	{
-					global $LANG;
+					
+					$domainRecords = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'sys_domain', 'hidden=0' );
+													
 					$this->MOD_MENU = Array (
 						'function' => Array (
+							/*
+
 							'1' => $LANG->getLL('function1'),
 							'2' => $LANG->getLL('function2'),
 							'3' => $LANG->getLL('function3'),
+							 * 
+							 */
 						)
 					);
+					
+					debug ($domainRecords);
+					
+					foreach ($domainRecords as $domainRecord){
+						$this->MOD_MENU['function'][ $domainRecord['uid'] ] =  $domainRecord['domainName'] ;
+					}
 					parent::menuConfig();
 				}
 
@@ -164,27 +191,48 @@ class  tx_multidomainpublishing_module1 extends t3lib_SCbase {
 				 *
 				 * @return	void
 				 */
-				function moduleContent()	{
-					switch((string)$this->MOD_SETTINGS['function'])	{
-						case 1:
-							$content='<div align="center"><strong>Hello World!</strong></div><br />
-								The "Kickstarter" has made this module automatically, it contains a default framework for a backend module but apart from that it does nothing useful until you open the script '.substr(t3lib_extMgm::extPath('multidomain_publishing'),strlen(PATH_site)).'mod1/index.php and edit it!
-								<hr />
-								<br />This is the GET/POST vars sent to the script:<br />'.
-								'GET:'.t3lib_div::view_array($_GET).'<br />'.
-								'POST:'.t3lib_div::view_array($_POST).'<br />'.
-								'';
-							$this->content.=$this->doc->section('Message #1:',$content,0,1);
-						break;
-						case 2:
-							$content='<div align=center><strong>Menu item #2...</strong></div>';
-							$this->content.=$this->doc->section('Message #2:',$content,0,1);
-						break;
-						case 3:
-							$content='<div align=center><strong>Menu item #3...</strong></div>';
-							$this->content.=$this->doc->section('Message #3:',$content,0,1);
-						break;
+				function moduleContent(){
+					global $BE_USER,$LANG,$BACK_PATH,$TCA_DESCR,$TCA,$CLIENT,$TYPO3_CONF_VARS;
+
+					$domainId = (int)$this->MOD_SETTINGS['function'];
+					$this->content.= 'id: '.$domainId;
+					
+						// Access check...
+						// The page will show only if there is a valid page and if this page may be viewed by the user
+					$this->pageinfo = t3lib_BEfunc::readPageAccess($this->id,$this->perms_clause);
+					$access = is_array($this->pageinfo) ? 1 : 0;
+					$addCmd='';
+					if ($this->id && $access)	{
+						$addCmd = '&ADMCMD_view=1&ADMCMD_editIcons=1'.t3lib_BEfunc::ADMCMD_previewCmds($this->pageinfo);
 					}
+
+					$parts = parse_url(t3lib_div::getIndpEnv('TYPO3_SITE_URL'));
+					$dName = t3lib_BEfunc::getDomainStartPage($parts['host'],$parts['path']) ?
+									t3lib_BEfunc::firstDomainRecord(t3lib_BEfunc::BEgetRootLine($this->id)):
+									'';
+					
+						// preview selected Domain
+					if ($domainId > 0){
+						$domainRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', 'sys_domain', 'uid=' . $domainId . ' AND hidden=0' );
+						
+						$this->content.= 'preview: '.$domainRecord['domainName'];
+							
+						$dName = $domainRecord['domainName'];
+					}
+
+						// preview of mount pages
+					$sys_page = t3lib_div::makeInstance('t3lib_pageSelect');
+					$sys_page->init(FALSE);
+					$mountPointInfo = $sys_page->getMountPointInfo($this->id);
+					if ($mountPointInfo && $mountPointInfo['overlay']) {
+						$this->id = $mountPointInfo['mount_pid'];
+						$addCmd .= '&MP=' . $mountPointInfo['MPvar'];
+					}
+
+					$this->url.= ($dName?(t3lib_div::getIndpEnv('TYPO3_SSL') ? 'https://' : 'http://').$dName:$BACK_PATH.'..').'/index.php?id='.$this->id.($this->type?'&type='.$this->type:'').$addCmd;
+					
+					$this->content.= '<iframe src="'.$this->url.'" width="300" height="300" />';
+						
 				}
 				
 		}
