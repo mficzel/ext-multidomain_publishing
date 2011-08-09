@@ -2,7 +2,7 @@
 # Table structure for table 'pages'
 #
 CREATE TABLE pages (
-	tx_multidomainpublishing_visibility int(11) DEFAULT '0' NOT NULL
+	tx_multidomainpublishing_visibility varchar(100) DEFAULT '0' NOT NULL
 );
 
 
@@ -10,7 +10,7 @@ CREATE TABLE pages (
 # Table structure for table 'tt_content'
 #
 CREATE TABLE tt_content (
-	tx_multidomainpublishing_visibility int(11) DEFAULT '0' NOT NULL
+	tx_multidomainpublishing_visibility varchar(100) DEFAULT '0' NOT NULL
 );
 
 
