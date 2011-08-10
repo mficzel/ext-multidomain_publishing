@@ -33,10 +33,10 @@ class tx_multidomainpublishing_hooks implements t3lib_Singleton, tslib_menu_filt
 	 * Get the pagetype from the Domain record
 	 * 
 	 * @param array $params Array of the Parameters
-	 * @param mixed $ref calling Object
+	 * @param tslib_fe $ref calling Object
 	 * @return string extra SQL to add 
 	 */
-	public function getPagetypeFromDomain( $params, $ref){
+	public function getPagetypeFromDomain($params, $ref){
 		
 		$domainRecord = self::getDomainRecord();
 		
@@ -45,6 +45,31 @@ class tx_multidomainpublishing_hooks implements t3lib_Singleton, tslib_menu_filt
 		}
 		
 		return;
+	}
+	
+	
+	/**
+	 * Show 404 if a page is not allowed on the active domain
+	 * 
+	 * @param array $params
+	 * @param tslib_fe $ref
+	 * @return void
+	 */
+	public function filterCurrentlyDisplayedPage(array $params, tslib_fe $tsfe){
+		
+		if ( $visibility = $tsfe->page['tx_multidomainpublishing_visibility'] ){
+			if ( ! ($visibility == '' || $visibility == 0) ){
+				$domainRecord = self::getDomainRecord();
+				if (!$domainRecord){
+					$tsfe->pageNotFoundAndExit("Page not found");
+				}				
+				$allowedDomainIds = t3lib_div::trimExplode(',',$visibility);
+				if ( !in_array( $domainRecord['uid'], $allowedDomainIds) ){
+					$tsfe->pageNotFoundAndExit("Page not found");
+				}
+			}
+		}
+		
 	}
 	
 	/**
