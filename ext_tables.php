@@ -65,7 +65,7 @@ t3lib_extMgm::addToAllTCAtypes('sys_domain','tx_multidomainpublishing_pagetype;;
 
 // register Backend Module
 if (TYPO3_MODE == 'BE') {
-	t3lib_extMgm::addModule('web', 'domainpreview', 'after:layout', t3lib_extMgm::extPath($_EXTKEY) . 'Modules/DomainPreview/');
+	t3lib_extMgm::addModule('web', 'domainpreview', 'after:view', t3lib_extMgm::extPath($_EXTKEY) . 'Modules/DomainPreview/');
 }
 
 

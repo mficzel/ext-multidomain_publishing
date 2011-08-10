@@ -6,7 +6,7 @@
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
-			<label index="mlang_tabs_tab">Domain Preview</label>
+			<label index="mlang_tabs_tab">Domain View</label>
 			<label index="mlang_labels_tabdescr">Show the Preview for the selected domain.</label>
 		</languageKey>
 	</data>

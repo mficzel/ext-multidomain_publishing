@@ -124,7 +124,7 @@ class  tx_multidomainpublishing_module1 extends t3lib_SCbase {
 						$this->doc = t3lib_div::makeInstance('mediumDoc');
 						$this->doc->backPath = $BACK_PATH;
 						$this->doc->form='<form action="" method="post" enctype="multipart/form-data">';
-
+						
 							// JavaScript
 						$this->doc->JScode = '
 							<script language="javascript" type="text/javascript">
@@ -181,7 +181,6 @@ class  tx_multidomainpublishing_module1 extends t3lib_SCbase {
 				 * @return	void
 				 */
 				function printContent()	{
-
 					$this->content.=$this->doc->endPage();
 					echo $this->content;
 				}
@@ -201,10 +200,6 @@ class  tx_multidomainpublishing_module1 extends t3lib_SCbase {
 						// The page will show only if there is a valid page and if this page may be viewed by the user
 					$this->pageinfo = t3lib_BEfunc::readPageAccess($this->id,$this->perms_clause);
 					$access = is_array($this->pageinfo) ? 1 : 0;
-					$addCmd='';
-					if ($this->id && $access)	{
-						$addCmd = '&ADMCMD_view=1&ADMCMD_editIcons=1'.t3lib_BEfunc::ADMCMD_previewCmds($this->pageinfo);
-					}
 
 					$parts = parse_url(t3lib_div::getIndpEnv('TYPO3_SITE_URL'));
 					$dName = t3lib_BEfunc::getDomainStartPage($parts['host'],$parts['path']) ?
@@ -229,7 +224,7 @@ class  tx_multidomainpublishing_module1 extends t3lib_SCbase {
 						$addCmd .= '&MP=' . $mountPointInfo['MPvar'];
 					}
 
-					$this->url.= ($dName?(t3lib_div::getIndpEnv('TYPO3_SSL') ? 'https://' : 'http://').$dName:$BACK_PATH.'..').'/index.php?id='.$this->id.($this->type?'&type='.$this->type:'').$addCmd;
+					$this->url.= ($dName?(t3lib_div::getIndpEnv('TYPO3_SSL') ? 'https://' : 'http://').$dName:$BACK_PATH.'..').'/index.php?id='.$this->id.($this->type?'&type='.$this->type:'');
 					
 					$this->content.= '<iframe src="'.$this->url.'" width="300" height="300" />';
 						
