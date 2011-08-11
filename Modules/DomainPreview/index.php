@@ -152,15 +152,14 @@ class tx_multidomainpublishing_module1 extends t3lib_SCbase {
 		);
 
 		$this->doc = t3lib_div::makeInstance('template');
-		$this->doc->backPath = $BACK_PATH;
-		$this->doc->setModuleTemplate('templates/func.html');
+		$this->doc->setModuleTemplate('template.html');
 
 		// **************************
 		// Main
 		// **************************
 
 		
-		if (($this->id && $access) || ($BE_USER->user['admin'] && !$this->id)) {
+		if ($this->id && $access) {
 
 				// JavaScript
 			$this->doc->JScode = $this->doc->wrapScriptTags('
@@ -196,15 +195,19 @@ class tx_multidomainpublishing_module1 extends t3lib_SCbase {
 			$markers['CONTENT'] = $this->content;
 			
 		} else {
-			// If no access or if ID == zero
+				// If no access or if ID == zero
+			$flashMessage = t3lib_div::makeInstance(
+				't3lib_FlashMessage',
+				$LANG->getLL('clickAPage_content'),
+				$LANG->getLL('title'),
+				t3lib_FlashMessage::INFO
+			);
+			$this->content = $flashMessage->render();
 
-			$this->doc = t3lib_div::makeInstance('mediumDoc');
-			$this->doc->backPath = $BACK_PATH;
-
-			$this->content.=$this->doc->startPage($LANG->getLL('title'));
-			$this->content.=$this->doc->header($LANG->getLL('title'));
-			$this->content.=$this->doc->spacer(5);
-			$this->content.=$this->doc->spacer(10);
+				// Setting up the buttons and markers for docheader
+			$docHeaderButtons = $this->getButtons();
+			$markers['CSH'] = $docHeaderButtons['csh'];
+			$markers['CONTENT'] = $this->content;
 		}
 		
 			// Build the <body> for the module
