@@ -6,6 +6,8 @@
  */
 
 require_once (PATH_tslib . 'interfaces/interface.tslib_menu_filterMenuPagesHook.php');
+require_once (t3lib_extMgm::extPath('cms')  . 'layout/interfaces/interface.tx_cms_layout_tt_content_drawitemhook.php');
+
 
 /**
  * Description of class
@@ -13,12 +15,13 @@ require_once (PATH_tslib . 'interfaces/interface.tslib_menu_filterMenuPagesHook.
  * @author martin
  * 
  */
-class tx_multidomainpublishing_hooks implements t3lib_Singleton, tslib_menu_filterMenuPagesHook { 
+class tx_multidomainpublishing_hooks implements t3lib_Singleton, tslib_menu_filterMenuPagesHook, tx_cms_layout_tt_content_drawItemHook { 
 	
 	/**
 	 * @var array active Domain Record
 	 */
 	private static $domainRecord;
+	private static $domainRecords;
 	
 	private static function getDomainRecord(){
 		if ( !self::$domainRecord ){
@@ -28,6 +31,22 @@ class tx_multidomainpublishing_hooks implements t3lib_Singleton, tslib_menu_filt
 		}
 		return self::$domainRecord;
 	}
+	
+	private static function getDomainRecordById($id){
+		if (self::$domainRecords[$id]){
+			return self::$domainRecords[$id];
+		} 
+		
+		$domainRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', 'sys_domain', 'uid=' . (int)$id . ' AND hidden=0' );
+		if ($domainRecord){
+			self::$domainRecords[(int)$id] = $domainRecord;
+			return $domainRecord;
+		}
+		
+		return NULL;
+	} 
+	
+	
 	
 	/**
 	 * Get the pagetype from the Domain record
@@ -122,7 +141,35 @@ class tx_multidomainpublishing_hooks implements t3lib_Singleton, tslib_menu_filt
 			}
 		}
 		return true;
-		
+			
+	}
+	
+	/**
+	 * Preprocesses the preview rendering of a content element.
+	 *
+	 * @param	tx_cms_layout		$parentObject: Calling parent object
+	 * @param	boolean				$drawItem: Whether to draw the item using the default functionalities
+	 * @param	string				$headerContent: Header content
+	 * @param	string				$itemContent: Item content
+	 * @param	array				$row: Record row of tt_content
+	 * @return	void
+	 */
+	public function preProcess(tx_cms_layout &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row){
+		if ($row['tx_multidomainpublishing_visibility'] && $row['tx_multidomainpublishing_visibility'] != 0 ){
+			
+			$domainIds = explode (',',$row['tx_multidomainpublishing_visibility']);
+			$domainNames = array();
+			foreach ($domainIds as $domainId){
+				$domain = $this->getDomainRecordById($domainId);
+				if ($domain){
+					$domainNames[] = $domain['domainName'];
+				}
+			} 
+			
+			if (count($domainNames)>0){
+				$itemContent .= 'Domains: ' . implode(', ',$domainNames) . '<br/>';
+			}
+		} 		
 	}
 }
 ?>
