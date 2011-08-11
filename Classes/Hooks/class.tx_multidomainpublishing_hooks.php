@@ -167,7 +167,7 @@ class tx_multidomainpublishing_hooks implements t3lib_Singleton, tslib_menu_filt
 			} 
 			
 			if (count($domainNames)>0){
-				$itemContent .= 'Domains: ' . implode(', ',$domainNames) . '<br/>';
+				$itemContent .= '<strong>Domains:</strong> ' . implode(', ',$domainNames) . '<br/>';
 			}
 		} 		
 	}
