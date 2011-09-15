@@ -18,7 +18,9 @@ CREATE TABLE tt_content (
 # Table structure for table 'sys_domain'
 #
 CREATE TABLE sys_domain (
-	tx_multidomainpublishing_pagetype int(11) DEFAULT '0' NOT NULL
+	tx_multidomainpublishing_pagetype int(11) DEFAULT '0' NOT NULL,
+	tx_multidomainpublishing_mode int(11) DEFAULT '0' NOT NULL
+
 );
 
 

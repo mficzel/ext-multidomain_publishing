@@ -9,11 +9,18 @@
 			<label index="pages.tx_multidomainpublishing_visibility">Domain visibility</label>
 			<label index="tt_content.tx_multidomainpublishing_visibility">Domain visibility</label>
 			<label index="sys_domain.tx_multidomainpublishing_pagetype">Default pagetype</label>
+			<label index="sys_domain.tx_multidomainpublishing_mode">Content Publishing Mode</label>
+			<label index="sys_domain.tx_multidomainpublishing_mode_allow">allow</label>
+			<label index="sys_domain.tx_multidomainpublishing_mode_deny">deny</label>
+
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="pages.tx_multidomainpublishing_visibility">Domain Sichtbarkeit</label>
 			<label index="tt_content.tx_multidomainpublishing_visibility">Domain Sichtbarkeit</label>
 			<label index="sys_domain.tx_multidomainpublishing_pagetype">Standatrd Seitentyp</label>
+			<label index="sys_domain.tx_multidomainpublishing_mode">Inhalts-Freigabemmodus</label>
+			<label index="sys_domain.tx_multidomainpublishing_mode_allow">freigeben</label>
+			<label index="sys_domain.tx_multidomainpublishing_mode_deny">verbieten</label>
 		</languageKey>
 	</data>
 </T3locallang>
