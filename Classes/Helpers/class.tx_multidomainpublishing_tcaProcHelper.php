@@ -36,9 +36,7 @@
 require_once (t3lib_extMgm::extPath('multidomain_publishing')  . 'Classes/Helpers/class.tx_multidomainpublishing_domainHelper.php');
 
 /**
- * Repository to handle the storing and reconstruction of all
- * aggregatorResults. The whole object <-> database
- * communication happens here.
+ * TCA Funtions for the multidomain_publishing extension
  *
  * @author Martin Ficzel <martin@work.de>
  * @author Thomas Hempel <thomas@work.de>

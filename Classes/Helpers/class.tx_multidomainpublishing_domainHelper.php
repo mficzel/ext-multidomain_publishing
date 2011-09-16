@@ -34,9 +34,7 @@
  */
 
 /**
- * Repository to handle the storing and reconstruction of all
- * aggregatorResults. The whole object <-> database
- * communication happens here.
+ * Class to handle the reading of domain records
  *
  * @author Martin Ficzel <martin@work.de>
  * @author Thomas Hempel <thomas@work.de>
