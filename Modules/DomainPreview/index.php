@@ -184,7 +184,7 @@ class tx_multidomainpublishing_module1 extends t3lib_SCbase {
 			}
 			
 			if ( $this->domainId>0 && $this->domainRecord ){ 
-				$this->content.=$this->doc->header('preview of page ' . $this->id . ' on domain ' . $this->domainRecord['domainName'] . '[' . $this->domainRecord['uid'] . ']'  );
+				$this->content .= $this->doc->header(sprintf($LANG->getLL('previewPageOnDomain'), $this->pageinfo['title'], $this->domainRecord['domainName']));
 			}
 			$this->content.=$this->doc->section('',$this->getModuleContent($domainId) );
 

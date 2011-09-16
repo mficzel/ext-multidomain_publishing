@@ -8,6 +8,7 @@
 		<languageKey index="default" type="array">
 			<label index="title">Domain Preview</label>
 			<label index="clickAPage_content">Please select a page</label>
+            <label index="previewPageOnDomain">Preview of page "%s" on domain "%s"</label>
 		</languageKey>
 	</data>
 </T3locallang>
