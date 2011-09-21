@@ -45,22 +45,28 @@ require_once (t3lib_extMgm::extPath('multidomain_publishing')  . 'Classes/Helper
  * @subpackage multidomain_publishing
  */
 class tx_multidomainpublishing_tcaProcHelper implements t3lib_Singleton { 
-	
-	public function selectDomainRestrictionsProcFunction($data, $tceForms){
-		
-		foreach ( array_keys( $data['items'] ) as $key){
-			$domainRecord = tx_multidomainpublishing_domainHelper::getDomainRecordById( $data['items'][$key][1] );
-			
-			if ( $domainRecord['tx_multidomainpublishing_mode'] == 0 ){
-				$mode = 'deny';
-			} else {
-				$mode = 'allow';
+
+	public function selectDomainRestrictionsProcFunction($data, $tceForms) {
+		$domainRecords = tx_multidomainpublishing_domainHelper::getDomainRecordsInRootlineOfPage($data['row']['uid'], array());
+		$domainRecordUids = array_keys($domainRecords);
+		$normalizedItems = array();
+
+		foreach ($data['items'] as $item) {
+			if (in_array($item[1], $domainRecordUids)) {
+				if ($domainRecords[$item[1]]['tx_multidomainpublishing_mode'] == 0) {
+					$mode = 'Don\'t show in ';
+				} else {
+					$mode = 'Show in ';
+				}
+
+				$item[0] = $mode.$item[0];
+				$normalizedItems[] = $item;
 			}
-			
-			$data['items'][$key][0] = '[' . $mode . '] ' . $domainRecord['domainName'];
 		}
-		
-		return ($items);
+
+		$data['items'] = $normalizedItems;
+		return $data;
 	}
+
 }
 ?>

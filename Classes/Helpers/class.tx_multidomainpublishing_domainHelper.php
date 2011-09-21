@@ -69,6 +69,31 @@ class tx_multidomainpublishing_domainHelper {
 		
 		return NULL;
 	}
-	
+
+	/**
+	 * Returns the domain record that is activated for this page
+	 *
+	 * @static
+	 * @param 	integer $pid: The page id to start from
+	 * @param	array	$domainRecords: A list of domain records
+	 * @return	Domain record
+	 */
+	public static function getDomainRecordsInRootlineOfPage($pid, array $domainRecords) {
+		$domainRecordsOnThisPage = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'sys_domain', 'pid='.(int)$pid.' AND hidden=0');
+		if ($domainRecordsOnThisPage) {
+			foreach ($domainRecordsOnThisPage as $domainRecord) {
+				$domainRecords[$domainRecord['uid']] = $domainRecord;
+			}
+		}
+
+		$pageRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('uid,pid', 'pages', 'uid='.(int)$pid.' AND hidden=0');
+		if ($pageRecord['pid'] == 0) {
+			return $domainRecords;
+		}
+
+		// traverse upwards one level if there is any
+		return tx_multidomainpublishing_domainHelper::getDomainRecordsInRootlineOfPage($pageRecord['pid'], $domainRecords);
+	}
+
 }
 ?>
