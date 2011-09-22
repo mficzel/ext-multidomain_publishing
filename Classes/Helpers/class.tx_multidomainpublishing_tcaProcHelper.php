@@ -54,9 +54,9 @@ class tx_multidomainpublishing_tcaProcHelper implements t3lib_Singleton {
 		foreach ($data['items'] as $item) {
 			if (in_array($item[1], $domainRecordUids)) {
 				if ($domainRecords[$item[1]]['tx_multidomainpublishing_mode'] == 0) {
-					$mode = 'Don\'t show in ';
+					$mode = $GLOBALS['LANG']->sL('LLL:EXT:multidomain_publishing/locallang_db.xml:sys_domain.tx_multidomainpublishing_mode_deny_label').' ';
 				} else {
-					$mode = 'Show in ';
+					$mode = $GLOBALS['LANG']->sL('LLL:EXT:multidomain_publishing/locallang_db.xml:sys_domain.tx_multidomainpublishing_mode_allow_label');
 				}
 
 				$item[0] = $mode.$item[0];

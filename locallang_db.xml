@@ -12,6 +12,8 @@
 			<label index="sys_domain.tx_multidomainpublishing_mode">Content Publishing Mode</label>
 			<label index="sys_domain.tx_multidomainpublishing_mode_allow">allow</label>
 			<label index="sys_domain.tx_multidomainpublishing_mode_deny">deny</label>
+            <label index="sys_domain.tx_multidomainpublishing_mode_deny_label">Don't show on</label>
+            <label index="sys_domain.tx_multidomainpublishing_mode_allow_label">Show on</label>
 
 		</languageKey>
 		<languageKey index="de" type="array">
@@ -21,6 +23,9 @@
 			<label index="sys_domain.tx_multidomainpublishing_mode">Inhalts-Freigabemmodus</label>
 			<label index="sys_domain.tx_multidomainpublishing_mode_allow">freigeben</label>
 			<label index="sys_domain.tx_multidomainpublishing_mode_deny">verbieten</label>
+
+            <label index="sys_domain.tx_multidomainpublishing_mode_deny_label">Freigeben auf</label>
+            <label index="sys_domain.tx_multidomainpublishing_mode_allow_label">Verbieten auf</label>
 		</languageKey>
 	</data>
 </T3locallang>
