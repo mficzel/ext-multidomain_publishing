@@ -263,7 +263,8 @@ class tx_multidomainpublishing_module1 extends t3lib_SCbase {
 
 		$this->url.= ( $dName ? (t3lib_div::getIndpEnv('TYPO3_SSL') ? 'https://' : 'http://') . $dName : $BACK_PATH . '..') . '/index.php?id=' . $this->id . ($this->type ? '&type=' . $this->type : '');
 
-		$content.= '<iframe src="' . $this->url . '"  />';
+		$content .= '<a href="#" onclick="var previewWin = window.open(\'' . $this->url . '\',\'newTYPO3frontendWindow\');previewWin.focus();" title="Show page"> open - ' . $this->url . '</span></a>';
+		$content .= '<iframe src="' . $this->url . '"  />';
 		
 		return $content;
 	}
