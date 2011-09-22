@@ -60,19 +60,23 @@ class tx_multidomainpublishing_txCmsLayoutHooks implements t3lib_Singleton, tx_c
 	public function preProcess(tx_cms_layout &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row){
 		if ($row['tx_multidomainpublishing_visibility'] && $row['tx_multidomainpublishing_visibility'] != 0 ){
 			
-			$domainIds = explode (',',$row['tx_multidomainpublishing_visibility']);
+			$domainIds = explode(',', $row['tx_multidomainpublishing_visibility']);
 			$domainInfos = array();
-			foreach ($domainIds as $domainId){
-				$domain =  tx_multidomainpublishing_domainHelper::getDomainRecordById($domainId);
-				if ($domain){
-					$modeInfo = ($domain['tx_multidomainpublishing_mode'] == 0) ? 'deny' : 'allow';   
-					$nameInfo = $domain['domainName'];
-					$domainInfos[] = $nameInfo . '-' . $modeInfo ;
+			foreach ($domainIds as $domainId) {
+				$domain = tx_multidomainpublishing_domainHelper::getDomainRecordById($domainId);
+				if ($domain) {
+					if ($domain['tx_multidomainpublishing_mode'] == 0) {
+						$modeInfo = $GLOBALS['LANG']->sL('LLL:EXT:multidomain_publishing/locallang_db.xml:sys_domain.tx_multidomainpublishing_mode_deny_label') . ' ';
+					} else {
+						$modeInfo = $GLOBALS['LANG']->sL('LLL:EXT:multidomain_publishing/locallang_db.xml:sys_domain.tx_multidomainpublishing_mode_allow_label') . ' ';
+					}
+
+					$domainInfos[] = $modeInfo . ' ' . $domain['domainName'];
 				}
 			} 
 			
-			if (count($domainInfos)>0){
-				$itemContent .= '<strong>Domain Settings:</strong> ' . implode(', ',$domainInfos) . '<br/>';
+			if (count($domainInfos) > 0) {
+				$itemContent .= '<strong>' . $GLOBALS['LANG']->sL('LLL:EXT:multidomain_publishing/locallang_db.xml:pages.tx_multidomainpublishing_visibility') . ':</strong><ul><li>' . implode('</li><li>', $domainInfos) . '</li></ul>';
 			}
 		} 		
 	}

@@ -47,16 +47,26 @@ require_once (t3lib_extMgm::extPath('multidomain_publishing')  . 'Classes/Helper
 class tx_multidomainpublishing_tcaProcHelper implements t3lib_Singleton { 
 
 	public function selectDomainRestrictionsProcFunction($data, $tceForms) {
-		$domainRecords = tx_multidomainpublishing_domainHelper::getDomainRecordsInRootlineOfPage($data['row']['uid'], array());
-		$domainRecordUids = array_keys($domainRecords);
+
+		$id = ($data['table'] == 'tt_content') ? $data['row']['pid'] : $data['row']['uid'];
+		$domainRecords = tx_multidomainpublishing_domainHelper::getDomainRecordsInRootlineOfPage($id, array());
+
+		if (count($domainRecords) == 0) {
+			$domainRecords = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'sys_domain', 'hidden=0');
+		}
+
+		$domainRecordUids = array();
 		$normalizedItems = array();
+		foreach ($domainRecords as $domainRecord) {
+			$domainRecordUids[] = $domainRecord['uid'];
+		}
 
 		foreach ($data['items'] as $item) {
 			if (in_array($item[1], $domainRecordUids)) {
 				if ($domainRecords[$item[1]]['tx_multidomainpublishing_mode'] == 0) {
-					$mode = $GLOBALS['LANG']->sL('LLL:EXT:multidomain_publishing/locallang_db.xml:sys_domain.tx_multidomainpublishing_mode_deny_label').' ';
+					$mode = $GLOBALS['LANG']->sL('LLL:EXT:multidomain_publishing/locallang_db.xml:sys_domain.tx_multidomainpublishing_mode_deny_label') . ' ';
 				} else {
-					$mode = $GLOBALS['LANG']->sL('LLL:EXT:multidomain_publishing/locallang_db.xml:sys_domain.tx_multidomainpublishing_mode_allow_label');
+					$mode = $GLOBALS['LANG']->sL('LLL:EXT:multidomain_publishing/locallang_db.xml:sys_domain.tx_multidomainpublishing_mode_allow_label') . ' ';
 				}
 
 				$item[0] = $mode.$item[0];
