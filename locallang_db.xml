@@ -24,8 +24,8 @@
 			<label index="sys_domain.tx_multidomainpublishing_mode_allow">freigeben</label>
 			<label index="sys_domain.tx_multidomainpublishing_mode_deny">verbieten</label>
 
-            <label index="sys_domain.tx_multidomainpublishing_mode_deny_label">Freigeben auf</label>
-            <label index="sys_domain.tx_multidomainpublishing_mode_allow_label">Verbieten auf</label>
+            <label index="sys_domain.tx_multidomainpublishing_mode_deny_label">Verbergen auf</label>
+            <label index="sys_domain.tx_multidomainpublishing_mode_allow_label">Anzeigen auf</label>
 		</languageKey>
 	</data>
 </T3locallang>
