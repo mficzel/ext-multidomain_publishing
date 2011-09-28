@@ -54,7 +54,7 @@ class tx_multidomainpublishing_t3libPageHooks implements t3lib_Singleton {
 	 * @param t3lib_pageSelect $ref calling Object
 	 * @return string extra SQL to add 
 	 */
-	public function addEnableColumnsHook( array $params , t3lib_pageSelect $ref ){
+	public function addEnableColumnsHook( $params , $ref ){
 
 		if ( $params['ctrl']['tx_multidomainpublishing_column'] && $params['ctrl']['tx_multidomainpublishing_column'] != '' ){
 			
