@@ -58,7 +58,7 @@ class tx_multidomainpublishing_tslibMenuHooks implements t3lib_Singleton, tslib_
 	 * @return	boolean		Returns true if the page can be safely included.
 	 */
 	public function processFilter(array &$data, array $banUidArray, $spacer, tslib_menu $ref){
-		return $this->tslib_menu_filterMenuPagesHook(&$data, $banUidArray, $spacer, $ref);
+		return $this->tslib_menu_filterMenuPagesHook($data, $banUidArray, $spacer, $ref);
 	}
 
 	/**

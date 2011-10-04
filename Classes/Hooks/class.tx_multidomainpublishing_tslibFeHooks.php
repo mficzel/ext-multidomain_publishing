@@ -75,21 +75,19 @@ class tx_multidomainpublishing_tslibFeHooks implements t3lib_Singleton {
 		
 		$domainRecord = tx_multidomainpublishing_domainHelper::getCurrentDomainRecord();
 		
-		if (!$domainRecord){
-			$tsfe->pageNotFoundAndExit("Domain not found");
-			return;
-		}
-				
-		$multidomainMode = $domainRecord['tx_multidomainpublishing_mode'];
-		$selectedDomainIds = t3lib_div::trimExplode(',',$tsfe->page['tx_multidomainpublishing_visibility']);
-		
-		if ( $multidomainMode == tx_multidomainpublishing_constants::MODE_DENY ){
-			if (in_array( $domainRecord['uid'],$selectedDomainIds ) ){
-				$tsfe->pageNotFoundAndExit("Page not found");
-			} 
-		} else { // tx_multidomainpublishing_constants::MODE_ALLOW 
-			if (!in_array( $domainRecord['uid'],$selectedDomainIds ) ){
-				$tsfe->pageNotFoundAndExit("Page not found");
+		if ($domainRecord){
+			
+			$multidomainMode = $domainRecord['tx_multidomainpublishing_mode'];
+			$selectedDomainIds = t3lib_div::trimExplode(',',$tsfe->page['tx_multidomainpublishing_visibility']);
+
+			if ( $multidomainMode == tx_multidomainpublishing_constants::MODE_DENY ){
+				if (in_array( $domainRecord['uid'],$selectedDomainIds ) ){
+					$tsfe->pageNotFoundAndExit("Page not found");
+				} 
+			} else { // tx_multidomainpublishing_constants::MODE_ALLOW 
+				if (!in_array( $domainRecord['uid'],$selectedDomainIds ) ){
+					$tsfe->pageNotFoundAndExit("Page not found");
+				}
 			}
 		}
 	}

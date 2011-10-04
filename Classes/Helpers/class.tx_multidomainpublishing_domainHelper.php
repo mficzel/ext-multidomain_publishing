@@ -44,14 +44,18 @@
  */
 class tx_multidomainpublishing_domainHelper {
 	
-	private static $domainRecord;
+	private static $domainRecord = NULL;
 	private static $domainRecords;
 	
 	public static function getCurrentDomainRecord(){
-		if ( !self::$domainRecord ){
+		if ( !self::$domainRecord && self::$domainRecord !== false ){
 			$host = t3lib_div::getIndpEnv('TYPO3_HOST_ONLY');
 			$domainRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', 'sys_domain', 'domainName=' . $GLOBALS['TYPO3_DB']->fullQuoteStr( $host, 'sys_domain' ) . ' AND hidden=0' );
-			self::$domainRecord = $domainRecord;
+			if ($domainRecord){
+				self::$domainRecord = $domainRecord;
+			} else {
+				self::$domainRecord = false;
+			}
 		}
 		return self::$domainRecord;
 	}
