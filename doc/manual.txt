@@ -15,43 +15,43 @@ Table of Contents
 EXT: Multidomain Publishing	1
 1 - Introduction	3
 1.1 - What does it do?	3
-1.2 - Screenshots	3
-2 - Users manual	4
-2.1 - Installing the extension	4
-2.2 - Configuring of the domain-records	4
-2.3 - Create TypoScript-Templates for the different Domains	5
-2.4 - Create Content for Domains	6
-2.5 - Preview Content	7
-3 - Administration	8
-4 - Configuration	9
-5 - Extending	10
-6 - ChangeLog	11
+1.2 - Screenshots	4
+2 - Users manual	5
+2.1 - Installing the extension	5
+2.2 - Configuring of the domain-records	5
+2.3 - Create TypoScript-Templates for the different Domains	6
+2.4 - Create Content for Domains	7
+2.5 - Preview Content	8
+2.6 - Redirecting mobile users	8
+3 - Administration	9
+4 - Configuration	10
+5 - Extending	11
+6 - ChangeLog	12
 
 
 1 -  Introduction
 1.1 -  What does it do?
-The Extension extens TYPO3 for managing contents for multiple domains in a single pagetree. The major difference to standard TYPO3 multiple-pagetree or insert-record solutions is thar we manage the differences between the contens of the configured domains where the existing aproaches manage the similarities. 
-So multidomain_publishing is handy when you manage more than one domain from a single typo3 installation and the domains share 80 to 90 Percent of the contens. 
+The Extension extends TYPO3 for managing contents for multiple domains in a single page-tree. The major difference to standard TYPO3 multiple page-trees or insert-record solutions is that we manage the differences between the contents of the configured domains where the existing approaches manage the similarities. 
+So multidomain-publishing is handy when you manage more than one domain from a single typo3 installation and the domains share 80 to 90 Percent of the content. 
 Example usecases are:
-1. Mobile versions of a domain where you want to adjust the landing pages but leave the content as it is.
-2. White-label sites that show your content in the layout of your partnersite
-3. microsites
-To achieve this multidomain publishing extends the acess-tab of backend records and adds the option to control the visibility across the configured domains. 
+1. Mobile versions of a domain where you want to adjust the landing pages but leave the most content as it is.
+2. White-label sites that show your content in the layout of your partner-sites.
+3. Microsites for parts of your content. 
+To achieve this multidomain-publishing extends the access-tab of backend-records and adds the option to control the visibility across the configured domains. 
+Sponsoring
+The development of this extension was supported by n@work - hamburg by donating developer manpower and community spirit. Thanks a lot.  
+ 
+
 1.2 -  Screenshots
 Here you see what the extension does:
-
-
+ 
 2 -  Users manual
-Documentation of how to use the extension, how it works, how to apply it if it's a website plugin. A user manual.
-Language should be non-technical, explaining, using small examples.
-Examples: For the "News" plugin this would be a manual showing how to create the news-items, explaining the options etc.
-Target group: Users, Administrators or Developers in that priority. Depends on the extension.
-
 2.1 -  Installing the extension
-The extension can be directly installed and needs no special configuration. If you are using a url-transformation extension you should install multidomain_publishing after the url-transformer.
+The extension can be directly installed and needs no special configuration. If you are using a url-transformation extension you should install multidomain-publishing after the url-transformer.
 2.2 -  Configuring of the domain-records
 
-Create the domain records as usual. Multidomain Publishing adds the marked options.
+
+Create the domain records as usual. Multidomain-publishing adds the marked options.
 
 Property:
 Data type:
@@ -60,16 +60,16 @@ Default:
 1 
 Default pagetype
 int
-If this option is set TYPO3 will render the page with given typeNum if no typeNum is specified. This overrides the default rendering of the page with type=0 for this domain. 
+If this option is set TYPO3 will render the page with the given typeNum if no typeNum is specified. This overrides the default rendering of the page with type=0 for this domain. 
 -
 2
 Content Publishing Mode
 allow / deny
-This option configures wether on this domains contents have to be hidden or enabled. The setting works for all records that are configured to use multidomain_publishing.
+This option configures wether on this domains contents have to be hidden or enabled. The setting works for all records that are configured to use multidomain-publishing.
 deny
 
 2.3 -  Create TypoScript-Templates for the different Domains
-If you want to show different templates on your domains you can use the existing typeNum mechanism of TYPO3 to manage different Page Templates.
+To use different TypoeScript-templates on your domains you can use the existing typeNum mechanism of TYPO3 to manage different Page Templates.
 # default Page
 page = PAGE
 page.typeNum = 0
@@ -82,7 +82,7 @@ page_mobile.typeNum = 1
 page_mobile.10 = TEMPLATE
 page_mobile.10 … 
 
-To configure the content rendering differently between domain use a TypoScript-condition for the type parameter.
+To configure the content rendering differently between domains use a TypoScript-condition for the type parameter.
 # adjust conten rendering for mobile
 [globalVar = GP:type = 1]
 tt_content{
@@ -91,26 +91,23 @@ tt_content{
 }
 [global]
 
-Now you should be able to see effect of the different templates on the domains.
+Now you should be able to see effect of the different templates on the domains. You can try the BE-module to preview your changes.
 2.4 -  Create Content for Domains
 
-The content for all domains is created in single pagtree. To control the visibility of your contents across the domains you will find a new option on the access tab of pages and contend and all records that are configured for multidomain_publishing.
+The content for all domains is created in single page-tree. To control the visibility of your contents across the domains you will find a new option on the access tab of pages and contens (and all records that are configured for multidomain-publishing) where you can select the domain-visibility mode for this record.
 Based on the allow/deny mode of the domain record you can select wether the content should be hidden or shown on this domain.
 The Page Module shows the domain restrictions for the content-elements.
 2.5 -  Preview Content
 
 To get a fast Preview of your Work you can use the included “Domain View”- Module that allows to select the domain that is used for previewing (1) and also includes a preview-Link to open the page in a new window (2). 
-3 -  Administration
-Describes how to manage the extension from an administrator’s point of view. That relates to Page/User TSconfig, permissions, configuration etc., which administrator level users have access to.
-Language should be non/semi-technical, explaining, using small examples.
-Target group: Administrators
+2.6 -  Redirecting mobile users
+Multidomain publishing manages content for your different domains. To automatically redirect mobile-users from your main domain to a specific subdomain we recommend to use the “Mobile Redirect”-extension (cwmobileredirect) from Carsten Windler. 
 
 
-4 -  Configuration
+3 -  Configuration & Administration
 The Extension does'nt need special TypoScript configuration. You should read the TS-Ref documentation of Conditions and pagetypes/typeNum instead. You can read the section User-Manul instead.
-
-5 -  Extending
-The following 3 steps show how easy multidomain_publishing can be integratet into any extension-record. The example shows the code that adds multidomain options to the tt_content-table.
+4 -  Extending
+The following 3 steps show how easy multidomain_publishing can be integrated into any extension-record. The example shows the code that adds the multidomain-options to the tt_content-table.
 Step 1 – add the database field to the record in ext_tables.sql.
 #
 # Extend Table structure for table 'tt_content'
@@ -153,14 +150,16 @@ t3lib_extMgm::addToAllTCAtypes('tt_content','tx_multidomainpublishing_visibility
 # 
 $GLOBALS['TCA']['tt_content']['ctrl']['tx_multidomainpublishing_column'] = 'tx_multidomainpublishing_visibility';
 
-Step 3 – use enableFields in your extension code.
+Step 3 – use enableFields in your code.
 
-Since multidomain_publishing implements a hook in the enable fields method all youzr extension that use enableFields properly are nor ready to go.
-6 -  ChangeLog
+Since multidomain_publishing implements a hook in the enable fields method all your code that uses enableFields properly is now multidomain-aware.
+5 -  ChangeLog
 Version:
 Changes:
 1.0.0
 Initial pubic release
+1.0.1
+Udated documentation, 
 
 
 
