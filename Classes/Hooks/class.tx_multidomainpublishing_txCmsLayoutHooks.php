@@ -33,6 +33,7 @@
  * $Id$
  */
 
+require_once (t3lib_extMgm::extPath('multidomain_publishing')  . 'Classes/class.tx_multidomainpublishing_constants.php');
 require_once (t3lib_extMgm::extPath('multidomain_publishing')  . 'Classes/Helpers/class.tx_multidomainpublishing_domainHelper.php');
 require_once (t3lib_extMgm::extPath('cms')  . 'layout/interfaces/interface.tx_cms_layout_tt_content_drawitemhook.php');
 
