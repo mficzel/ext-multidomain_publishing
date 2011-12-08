@@ -6,10 +6,10 @@
 *
 * All rights reserved
 *
-* This script is part of the Multidomain Publishing extension. The 
+* This script is part of the Multidomain Publishing extension. The
 * Multidomain Publishing extension is free software; you can redistribute
-* it and/or modify it under the terms of the GNU General Public License 
-* as published by the Free Software Foundation; either version 2 of the 
+* it and/or modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version 2 of the
 * License, or (at your option) any later version.
 *
 * The GNU General Public License can be found at
@@ -46,39 +46,33 @@ require_once (t3lib_extMgm::extPath('multidomain_publishing')  . 'Classes/Helper
  * @package TYPO3
  * @subpackage multidomain_publishing
  */
-class tx_multidomainpublishing_t3libPageHooks implements t3lib_Singleton { 
-	
+class tx_multidomainpublishing_t3libPageHooks implements t3lib_Singleton {
+
 	/**
-	 * Extend the Enable Field Method to make use of the 
-	 * 
+	 * Extend the Enable Field Method to make use of the
+	 *
 	 * @param array      $params Array of the given Parameter
 	 * @param t3lib_pageSelect $ref calling Object
-	 * @return string extra SQL to add 
+	 * @return string extra SQL to add
 	 */
 	public function addEnableColumnsHook( $params , $ref ){
 
 		if ( $params['ctrl']['tx_multidomainpublishing_column'] && $params['ctrl']['tx_multidomainpublishing_column'] != '' ){
-			
+
 			$domainRecord = tx_multidomainpublishing_domainHelper::getCurrentDomainRecord();
-						
+
 			$visibitySettings = '`' . $params['table'] . '`.`' . $params['ctrl']['tx_multidomainpublishing_column'] . '`';
 			$domainRecordUid = (int)$domainRecord['uid'];
-			
-			$sqlConditions = '(' ;
-			$sqlConditions .= $visibitySettings . '=' . $domainRecordUid . ' OR ';
-			$sqlConditions .= $visibitySettings . ' LIKE "'.$domainRecordUid.',%"  OR '; 
-			$sqlConditions .= $visibitySettings . ' LIKE "%,'.$domainRecordUid.'" OR '; 
-			$sqlConditions .= $visibitySettings . ' LIKE "%,'.$domainRecordUid.',%"';
-			$sqlConditions .= ')';
+			$sqlCondition = $GLOBALS['TYPO3_DB']->listQuery($params['ctrl']['tx_multidomainpublishing_column'], $domainRecordUid, $params['table']);
 
 			if ($domainRecord['tx_multidomainpublishing_mode']  == tx_multidomainpublishing_constants::MODE_DENY ){
-				$sql = ' AND NOT ' . $sqlConditions ;
+				$sql = ' AND NOT ' . $sqlCondition ;
 			} else { // tx_multidomainpublishing_constants::MODE_ALLOW
-				$sql = ' AND ' .  $sqlConditions;
+				$sql = ' AND ' .  $sqlCondition;
 			}
-			
+
 			return ($sql);
-			
+
 		}
 		return;
 	}

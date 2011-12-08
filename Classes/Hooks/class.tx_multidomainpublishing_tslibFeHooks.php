@@ -6,10 +6,10 @@
 *
 * All rights reserved
 *
-* This script is part of the Multidomain Publishing extension. The 
+* This script is part of the Multidomain Publishing extension. The
 * Multidomain Publishing extension is free software; you can redistribute
-* it and/or modify it under the terms of the GNU General Public License 
-* as published by the Free Software Foundation; either version 2 of the 
+* it and/or modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version 2 of the
 * License, or (at your option) any later version.
 *
 * The GNU General Public License can be found at
@@ -45,46 +45,46 @@ require_once (t3lib_extMgm::extPath('multidomain_publishing')  . 'Classes/Helper
  * @package TYPO3
  * @subpackage multidomain_publishing
  */
-class tx_multidomainpublishing_tslibFeHooks implements t3lib_Singleton { 
+class tx_multidomainpublishing_tslibFeHooks implements t3lib_Singleton {
 
 	/**
 	 * Get the pagetype from the Domain record
-	 * 
+	 *
 	 * @param array $params Array of the Parameters
 	 * @param tslib_fe $tsfe calling TSFE Object
-	 * @return string extra SQL to add 
+	 * @return string extra SQL to add
 	 */
 	public function checkAlternativeIdMethodsPostProcHook(array $params, tslib_fe $tsfe){
-		
+
 		$domainRecord = tx_multidomainpublishing_domainHelper::getCurrentDomainRecord();
 		
-		if ($domainRecord && $domainRecord['tx_multidomainpublishing_pagetype'] && $domainRecord['tx_multidomainpublishing_pagetype'] > 0 ){
+		if ($tsfe->type == 0 && $domainRecord && $domainRecord['tx_multidomainpublishing_pagetype'] && $domainRecord['tx_multidomainpublishing_pagetype'] > 0 ){
 			$params['pObj']->mergingWithGetVars( array('type' => $domainRecord['tx_multidomainpublishing_pagetype'] ) );
 		}
 		return;
 	}
-	
+
 	/**
 	 * Show a 404 if a page is not allowed on the active domain
-	 * 
+	 *
 	 * @param array $params Array of the given Parameter
-	 * @param tslib_fe $tsfe calling TSFE Object 
+	 * @param tslib_fe $tsfe calling TSFE Object
 	 * @return void
 	 */
 	public function contentPostProcAllHook(array $params, tslib_fe $tsfe){
-		
+
 		$domainRecord = tx_multidomainpublishing_domainHelper::getCurrentDomainRecord();
-		
+
 		if ($domainRecord){
-			
+
 			$multidomainMode = $domainRecord['tx_multidomainpublishing_mode'];
 			$selectedDomainIds = t3lib_div::trimExplode(',',$tsfe->page['tx_multidomainpublishing_visibility']);
 
 			if ( $multidomainMode == tx_multidomainpublishing_constants::MODE_DENY ){
 				if (in_array( $domainRecord['uid'],$selectedDomainIds ) ){
 					$tsfe->pageNotFoundAndExit("Page not found");
-				} 
-			} else { // tx_multidomainpublishing_constants::MODE_ALLOW 
+				}
+			} else { // tx_multidomainpublishing_constants::MODE_ALLOW
 				if (!in_array( $domainRecord['uid'],$selectedDomainIds ) ){
 					$tsfe->pageNotFoundAndExit("Page not found");
 				}
