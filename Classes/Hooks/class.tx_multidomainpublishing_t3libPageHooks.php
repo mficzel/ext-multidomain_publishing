@@ -61,18 +61,19 @@ class tx_multidomainpublishing_t3libPageHooks implements t3lib_Singleton {
 
 			$domainRecord = tx_multidomainpublishing_domainHelper::getCurrentDomainRecord();
 
-			$visibitySettings = '`' . $params['table'] . '`.`' . $params['ctrl']['tx_multidomainpublishing_column'] . '`';
-			$domainRecordUid = (int)$domainRecord['uid'];
-			$sqlCondition = $GLOBALS['TYPO3_DB']->listQuery($params['ctrl']['tx_multidomainpublishing_column'], $domainRecordUid, $params['table']);
+			if ($domainRecord){
+				
+				$visibitySettings = '`' . $params['table'] . '`.`' . $params['ctrl']['tx_multidomainpublishing_column'] . '`';
+				$domainRecordUid = (int)$domainRecord['uid'];
+				$sqlCondition = $GLOBALS['TYPO3_DB']->listQuery($params['ctrl']['tx_multidomainpublishing_column'], $domainRecordUid, $params['table']);
 
-			if ($domainRecord['tx_multidomainpublishing_mode']  == tx_multidomainpublishing_constants::MODE_DENY ){
-				$sql = ' AND NOT ' . $sqlCondition ;
-			} else { // tx_multidomainpublishing_constants::MODE_ALLOW
-				$sql = ' AND ' .  $sqlCondition;
+				if ($domainRecord['tx_multidomainpublishing_mode']  == tx_multidomainpublishing_constants::MODE_DENY ){
+					$sql = ' AND NOT ' . $sqlCondition ;
+				} else { // tx_multidomainpublishing_constants::MODE_ALLOW
+					$sql = ' AND ' .  $sqlCondition;
+				}
+				return ($sql);
 			}
-
-			return ($sql);
-
 		}
 		return;
 	}
