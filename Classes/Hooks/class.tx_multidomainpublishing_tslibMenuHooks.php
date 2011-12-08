@@ -6,10 +6,10 @@
 *
 * All rights reserved
 *
-* This script is part of the Multidomain Publishing extension. The 
+* This script is part of the Multidomain Publishing extension. The
 * Multidomain Publishing extension is free software; you can redistribute
-* it and/or modify it under the terms of the GNU General Public License 
-* as published by the Free Software Foundation; either version 2 of the 
+* it and/or modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version 2 of the
 * License, or (at your option) any later version.
 *
 * The GNU General Public License can be found at
@@ -46,10 +46,10 @@ require_once (PATH_tslib . 'interfaces/interface.tslib_menu_filterMenuPagesHook.
  * @package TYPO3
  * @subpackage multidomain_publishing
  */
-class tx_multidomainpublishing_tslibMenuHooks implements t3lib_Singleton, tslib_menu_filterMenuPagesHook { 
-	
+class tx_multidomainpublishing_tslibMenuHooks implements t3lib_Singleton, tslib_menu_filterMenuPagesHook {
+
 	/**
-	 * an alias to method tslib_menu_filterMenuPagesHook, the interface seems to have been changed  
+	 * an alias to method tslib_menu_filterMenuPagesHook, the interface seems to have been changed
 	 *
 	 * @param	array		Array of menu items
 	 * @param	array		Array of page uids which are to be excluded
@@ -71,25 +71,29 @@ class tx_multidomainpublishing_tslibMenuHooks implements t3lib_Singleton, tslib_
 	 * @return	boolean		Returns true if the page can be safely included.
 	 */
 	public function tslib_menu_filterMenuPagesHook (array &$data, array $banUidArray, $spacer, tslib_menu $ref){
-		
-		$domainRecord = tx_multidomainpublishing_domainHelper::getCurrentDomainRecord();
-		$multidomainMode = $domainRecord['tx_multidomainpublishing_mode'];
-		$selectedDomainIds = t3lib_div::trimExplode(',',$data['tx_multidomainpublishing_visibility'] );
 
-		if ($multidomainMode == tx_multidomainpublishing_constants::MODE_DENY ) {
-			if ( in_array( $domainRecord['uid'], $selectedDomainIds) ){
-				return false;
-			} else {
-				return true;
-			}
-		} else { // tx_multidomainpublishing_constants::MODE_ALLOW 
-			if ( in_array( $domainRecord['uid'], $selectedDomainIds) ){
-				return true;
-			} else {
-				return false;
+		$domainRecord = tx_multidomainpublishing_domainHelper::getCurrentDomainRecord();
+
+		if ($domainRecord){
+			$multidomainMode = $domainRecord['tx_multidomainpublishing_mode'];
+			$selectedDomainIds = t3lib_div::trimExplode(',',$data['tx_multidomainpublishing_visibility'] );
+
+			if ($multidomainMode == tx_multidomainpublishing_constants::MODE_DENY ) {
+				if ( in_array( $domainRecord['uid'], $selectedDomainIds) ){
+					return false;
+				} else {
+					return true;
+				}
+			} else { // tx_multidomainpublishing_constants::MODE_ALLOW
+				if ( in_array( $domainRecord['uid'], $selectedDomainIds) ){
+					return true;
+				} else {
+					return false;
+				}
 			}
 		}
+		return true;
 	}
-	
+
 }
 ?>
