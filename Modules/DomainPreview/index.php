@@ -48,26 +48,26 @@ class tx_multidomainpublishing_module1 extends t3lib_SCbase {
 	// Internal, dynamic:
 	var $pageinfo;
 	var $fileProcessor;
-	
+
 	var $domainId;
 	var $domainRecord;
-	
+
 	/**
 	 * Document Template Object
 	 *
 	 * @var mediumDoc
 	 */
 	var $doc;
-	
+
 	function init()	{
 		parent::init();
 		$this->domainId = (int) $this->MOD_SETTINGS['function'];
-		if ($this->domainId > 0){ 
+		if ($this->domainId > 0){
 			$this->domainRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', 'sys_domain', 'uid=' . $this->domainId . ' AND hidden=0');
-		}	
-	}	
-		
-			
+		}
+	}
+
+
 	/**
 	 * Adds items to the ->MOD_MENU array. Used for the function menu selector.
 	 *
@@ -129,7 +129,7 @@ class tx_multidomainpublishing_module1 extends t3lib_SCbase {
 		}
 		return $buttons;
 	}
-	
+
 	/**
 	 * Main function of the module. Write the content to $this->content
 	 * If you chose "web" as main module, you will need to consider the $this->id parameter which will contain the uid-number of the page clicked in the page tree
@@ -143,6 +143,7 @@ class tx_multidomainpublishing_module1 extends t3lib_SCbase {
 		// The page will show only if there is a valid page and if this page may be viewed by the user
 		$this->pageinfo = t3lib_BEfunc::readPageAccess($this->id,$this->perms_clause);
 		$access = is_array($this->pageinfo) ? 1 : 0;
+
 
 			// Template markers
 		$markers = array(
@@ -158,8 +159,9 @@ class tx_multidomainpublishing_module1 extends t3lib_SCbase {
 		// Main
 		// **************************
 
-		
 		if ($this->id && $access) {
+
+			$content = '';
 
 				// JavaScript
 			$this->doc->JScode = $this->doc->wrapScriptTags('
@@ -172,29 +174,31 @@ class tx_multidomainpublishing_module1 extends t3lib_SCbase {
 				script_ended = 1;
 				if (top.fsMod) top.fsMod.recentIds["web"] = '.intval($this->id).';
 			');
-			
+
 				// Setting up the context sensitive menu:
 			$this->doc->getContextMenuCode();
-			
 			$this->doc->form='<form action="index.php" method="post"><input type="hidden" name="id" value="'.$this->id.'" />';
-
 			$vContent = $this->doc->getVersionSelector($this->id,1);
-			if ($vContent)	{
-				$this->content.=$this->doc->section('',$vContent);
+			if ($vContent) {
+				$content .= $this->doc->section('',$vContent);
 			}
-			
-			if ( $this->domainId>0 && $this->domainRecord ){ 
-				$this->content .= $this->doc->header(sprintf($LANG->getLL('previewPageOnDomain'), $this->pageinfo['title'], $this->domainRecord['domainName']));
+
+			if ($this->domainId > 0 && $this->domainRecord) {
+				$content .= $this->doc->header(sprintf($LANG->getLL('previewPageOnDomain'), $this->pageinfo['title'], $this->domainRecord['domainName']));
 			}
-			$this->content.=$this->doc->section('',$this->getModuleContent($domainId) );
+			$url = $this->getUrlForDomain($this->domainId);
+
+			$content .= $this->doc->section('Domain', t3lib_BEfunc::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']) . $this->getPopupLinkForUrl($url));
+			$content .= $this->doc->section('Preview', $this->getIframeForUrl($url));
 
 				// Setting up the buttons and markers for docheader
 			$docHeaderButtons = $this->getButtons();
 			$markers['CSH'] = $docHeaderButtons['csh'];
-			$markers['FUNC_MENU'] = t3lib_BEfunc::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']);
-			$markers['CONTENT'] = $this->content;
-			
+			$markers['FUNC_MENU'] = '';
+			$markers['CONTENT'] = $content;
+
 		} else {
+
 				// If no access or if ID == zero
 			$flashMessage = t3lib_div::makeInstance(
 				't3lib_FlashMessage',
@@ -202,20 +206,20 @@ class tx_multidomainpublishing_module1 extends t3lib_SCbase {
 				$LANG->getLL('title'),
 				t3lib_FlashMessage::INFO
 			);
-			$this->content = $flashMessage->render();
 
 				// Setting up the buttons and markers for docheader
 			$docHeaderButtons = $this->getButtons();
 			$markers['CSH'] = $docHeaderButtons['csh'];
-			$markers['CONTENT'] = $this->content;
+			$markers['CONTENT'] = $flashMessage->render();;
 		}
-		
+
 			// Build the <body> for the module
-		$this->content = $this->doc->moduleBody($this->pageinfo, $docHeaderButtons, $markers);
+		$bodyContent = $this->doc->moduleBody($this->pageinfo, $docHeaderButtons, $markers);
+
 			// Renders the module page
 		$this->content = $this->doc->render(
 			$LANG->getLL('title'),
-			$this->content
+			$bodyContent
 		);
 	}
 
@@ -233,10 +237,9 @@ class tx_multidomainpublishing_module1 extends t3lib_SCbase {
 	 *
 	 * @return	void
 	 */
-	function getModuleContent($domainId) {
-		global $BE_USER, $LANG, $BACK_PATH, $TCA_DESCR, $TCA, $CLIENT, $TYPO3_CONF_VARS;
+	function getUrlForDomain($domainId) {
+		global $BACK_PATH;
 
-		
 		// Access check...
 		// The page will show only if there is a valid page and if this page may be viewed by the user
 		$this->pageinfo = t3lib_BEfunc::readPageAccess($this->id, $this->perms_clause);
@@ -255,18 +258,17 @@ class tx_multidomainpublishing_module1 extends t3lib_SCbase {
 		// preview of mount pages
 		$sys_page = t3lib_div::makeInstance('t3lib_pageSelect');
 		$sys_page->init(FALSE);
-		$mountPointInfo = $sys_page->getMountPointInfo($this->id);
-		if ($mountPointInfo && $mountPointInfo['overlay']) {
-			$this->id = $mountPointInfo['mount_pid'];
-			$addCmd .= '&MP=' . $mountPointInfo['MPvar'];
-		}
 
-		$this->url.= ( $dName ? (t3lib_div::getIndpEnv('TYPO3_SSL') ? 'https://' : 'http://') . $dName : $BACK_PATH . '..') . '/index.php?id=' . $this->id . ($this->type ? '&type=' . $this->type : '');
+		$url = ( $dName ? (t3lib_div::getIndpEnv('TYPO3_SSL') ? 'https://' : 'http://') . $dName : $BACK_PATH . '..') . '/index.php?id=' . $this->id . ($this->type ? '&type=' . $this->type : '');
+		return $url;
+	}
 
-		$content .= '<a href="#" onclick="var previewWin = window.open(\'' . $this->url . '\',\'newTYPO3frontendWindow\');previewWin.focus();" title="Show page"> open - ' . $this->url . '</span></a>';
-		$content .= '<iframe src="' . $this->url . '"  />';
-		
-		return $content;
+	function getIframeForUrl($url) {
+		return '<iframe src="' . $url . '"  />';
+	}
+
+	function getPopupLinkForUrl($url) {
+		return '<a href="#" onclick="var previewWin = window.open(\'' . $url . '\',\'newTYPO3frontendWindow\');previewWin.focus();" title="Show page"> open - ' . $url . '</span></a>';
 	}
 
 }
