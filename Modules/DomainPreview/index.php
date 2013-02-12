@@ -47,10 +47,11 @@ class tx_multidomainpublishing_module1 extends t3lib_SCbase {
 
 	// Internal, dynamic:
 	var $pageinfo;
-	var $fileProcessor;
+	var $rootline;
 
-	var $domainId;
-	var $domainRecord;
+	var $domainRecords;
+	var $activeDomainId;
+	var $activeDomainRecord;
 
 	/**
 	 * Document Template Object
@@ -59,32 +60,41 @@ class tx_multidomainpublishing_module1 extends t3lib_SCbase {
 	 */
 	var $doc;
 
-	function init()	{
+	function init() {
+
+		// init ti get the id
 		parent::init();
-		$this->domainId = (int) $this->MOD_SETTINGS['function'];
-		if ($this->domainId > 0){
-			$this->domainRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', 'sys_domain', 'uid=' . $this->domainId . ' AND hidden=0');
+
+		$this->pageinfo = t3lib_BEfunc::readPageAccess($this->id, $this->perms_clause);
+		$this->rootline = t3lib_BEfunc::BEgetRootLine($this->id);
+
+		if ($this->rootline) {
+			$rootlineSubConstraint = array();
+			foreach ($this->rootline as $rootlineItem) {
+				$rootlineSubConstraint[] = 'pid=' . intval($rootlineItem['uid']);
+			}
+			$rootlineConstraint = '( ' . implode(' OR ', $rootlineSubConstraint) . ' )';
+		} else {
+			$rootlineConstraint = '1';
 		}
-	}
 
-
-	/**
-	 * Adds items to the ->MOD_MENU array. Used for the function menu selector.
-	 *
-	 * @return	void
-	 */
-	function menuConfig() {
-
-		$domainRecords = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'sys_domain', 'hidden=0');
+		$this->domainRecords = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('*', 'sys_domain', 'hidden=0 AND ' . $rootlineConstraint );
 
 		$this->MOD_MENU = Array(
 			'function' => Array()
 		);
 
-		foreach ($domainRecords as $domainRecord) {
+		foreach ($this->domainRecords as $domainRecord) {
 			$this->MOD_MENU['function'][$domainRecord['uid']] = $domainRecord['domainName'];
 		}
-		parent::menuConfig();
+
+		// init again to check parameter against currently modified MOD_MENU
+		parent::init();
+
+		$this->activeDomainId = (int) $this->MOD_SETTINGS['function'];
+		if ($this->activeDomainId > 0) {
+			$this->activeDomainRecord = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', 'sys_domain', 'uid=' . $this->activeDomainId . ' AND hidden=0');
+		}
 	}
 
 	/**
@@ -92,8 +102,8 @@ class tx_multidomainpublishing_module1 extends t3lib_SCbase {
 	 *
 	 * @return	array	all available buttons as an assoc. array
 	 */
-	protected function getButtons()	{
-		global $TCA, $LANG, $BACK_PATH, $BE_USER;
+	protected function getButtons() {
+		global $BACK_PATH, $BE_USER;
 
 		$buttons = array(
 			'csh' => '',
@@ -113,7 +123,7 @@ class tx_multidomainpublishing_module1 extends t3lib_SCbase {
 				">' .	t3lib_iconWorks::getSpriteIcon('actions-document-view') . '</a>';
 
 				// Shortcut
-			if ($BE_USER->mayMakeShortcut())	{
+			if ($BE_USER->mayMakeShortcut()) {
 				$buttons['shortcut'] = $this->doc->makeShortcutIcon('id, edit_record, pointer, new_unique_uid, search_field, search_levels, showLimit', implode(',', array_keys($this->MOD_MENU)), $this->MCONF['name']);
 			}
 
@@ -137,13 +147,12 @@ class tx_multidomainpublishing_module1 extends t3lib_SCbase {
 	 * @return	[type]		...
 	 */
 	function main() {
+
 		global $BE_USER,$LANG,$BACK_PATH;
 
 		// Access check...
 		// The page will show only if there is a valid page and if this page may be viewed by the user
-		$this->pageinfo = t3lib_BEfunc::readPageAccess($this->id,$this->perms_clause);
 		$access = is_array($this->pageinfo) ? 1 : 0;
-
 
 			// Template markers
 		$markers = array(
@@ -183,13 +192,17 @@ class tx_multidomainpublishing_module1 extends t3lib_SCbase {
 				$content .= $this->doc->section('',$vContent);
 			}
 
-			if ($this->domainId > 0 && $this->domainRecord) {
-				$content .= $this->doc->header(sprintf($LANG->getLL('previewPageOnDomain'), $this->pageinfo['title'], $this->domainRecord['domainName']));
+			if ($this->activeDomainId > 0 && $this->activeDomainRecord) {
+				$content .= $this->doc->header(sprintf($LANG->getLL('previewPageOnDomain'), $this->pageinfo['title'], $this->activeDomainRecord['domainName']));
 			}
-			$url = $this->getUrlForDomain($this->domainId);
+			$url = $this->getUrlForDomain($this->activeDomainId);
 
-			$content .= $this->doc->section('Domain', t3lib_BEfunc::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']) . $this->getPopupLinkForUrl($url));
-			$content .= $this->doc->section('Preview', $this->getIframeForUrl($url));
+			$funcMenu = t3lib_BEfunc::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']);
+			$popupLink =  $this->getPopupLinkForUrl($url);
+			$iframePreview = $this->getIframeForUrl($url);
+
+			$content .= $this->doc->section('Domain', $funcMenu . $popupLink );
+			$content .= $this->doc->section('Preview', $iframePreview);
 
 				// Setting up the buttons and markers for docheader
 			$docHeaderButtons = $this->getButtons();
@@ -251,8 +264,8 @@ class tx_multidomainpublishing_module1 extends t3lib_SCbase {
 			'';
 
 		// preview selected Domain
-		if ($this->domainId > 0 && $this->domainRecord ) {
-			$dName = $this->domainRecord['domainName'];
+		if ($this->activeDomainId > 0 && $this->activeDomainRecord ) {
+			$dName = $this->activeDomainRecord['domainName'];
 		}
 
 		// preview of mount pages
